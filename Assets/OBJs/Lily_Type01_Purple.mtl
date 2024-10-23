@@ -1,0 +1,18 @@
+# 3ds Max Wavefront OBJ Exporter v0.97b - (c)2007 guruware
+# File Created: 24.10.2019 22:40:13
+
+newmtl LPEP_Atlas01
+	Ns 10.0000
+	Ni 1.5000
+	d 1.0000
+	Tr 0.0000
+	Tf 1.0000 1.0000 1.0000 
+	illum 2
+	Ka 0.5882 0.5882 0.5882
+	Kd 0.5882 0.5882 0.5882
+	Ks 0.0000 0.0000 0.0000
+	Ke 0.1765 0.1765 0.1765
+	map_Ka D:\ASP_2018\LowPolyEnviroPack_2018\texture_LowPolyMegaSet\LPEP_TextureAtlas_Master.psd
+	map_Kd D:\ASP_2018\LowPolyEnviroPack_2018\texture_LowPolyMegaSet\LPEP_TextureAtlas_Master.psd
+	map_Ke D:\ASP_2018\LowPolyEnviroPack_2018\texture_LowPolyMegaSet\LPEP_TextureAtlas_Master.psd
+	map_d D:\ASP_2018\LowPolyEnviroPack_2018\texture_LowPolyMegaSet\LPEP_TextureAtlas_Cutout.png

@@ -7,6 +7,7 @@ TagManager:
   - Box
   - Trail
   - Flame
+  - Water
   layers:
   - Default
   - TransparentFX
