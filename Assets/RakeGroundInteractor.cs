@@ -1,52 +1,89 @@
 using UnityEngine;
+using System.Collections;
 using System.Collections.Generic;
 
 public class RakeGroundInteraction : MonoBehaviour
 {
-    public GameObject soilPatchPrefab;          // The soil patch prefab to spawn
+    public GameObject drySoilPrefab;            // The dry soil prefab
+    public GameObject wetSoilPrefab;            // The wet soil prefab
     public GameObject terrainObject;            // Reference to the terrain object
     public float spawnHeightOffset = 0.01f;     // Offset to avoid clipping
-    public float gridSize = 1f;                  // Size of each grid cell
-
-    // A HashSet to keep track of occupied positions
+    public float gridSize = 1f;                 // Size of each grid cell
     private HashSet<Vector3> occupiedPositions = new HashSet<Vector3>();
 
     private void OnTriggerStay(Collider other)
     {
         if (other.gameObject == terrainObject && IsRakeHeldByPlayer())
         {
-            // Get the position where the rake touches the ground
             Vector3 touchPoint = transform.position;
 
-            // Round the position to the nearest grid cell
             Vector3 gridPosition = new Vector3(
                 Mathf.Round(touchPoint.x / gridSize) * gridSize,
-                touchPoint.y,  // Keep the y position as it is
+                touchPoint.y,
                 Mathf.Round(touchPoint.z / gridSize) * gridSize
             );
 
-            // Adjust the gridPosition's Y to match the terrain's height
-            gridPosition.y = terrainObject.GetComponent<Terrain>().SampleHeight(gridPosition) + spawnHeightOffset;
+            Terrain terrain = terrainObject.GetComponent<Terrain>();
+            gridPosition.y = terrain.SampleHeight(gridPosition) + spawnHeightOffset;
 
-            // Check if the position is already occupied
             if (!occupiedPositions.Contains(gridPosition))
             {
-                // Instantiate a soil patch at the grid position
                 SpawnSoilPatch(gridPosition);
-                occupiedPositions.Add(gridPosition);  // Mark this position as occupied
+                occupiedPositions.Add(gridPosition);
             }
         }
     }
 
     private bool IsRakeHeldByPlayer()
     {
-        // Placeholder for actual logic to check if the rake is in the player’s hand
-        return true;
+        return true; // Placeholder logic for rake possession check
     }
 
     private void SpawnSoilPatch(Vector3 position)
     {
-        // Instantiate the soil patch at the adjusted position and set it to face upwards
-        GameObject soilPatch = Instantiate(soilPatchPrefab, position, Quaternion.Euler(90, 0, 0));
+        GameObject soilPatch = Instantiate(drySoilPrefab, position, Quaternion.identity);
+
+        Vector3 normal = terrainObject.GetComponent<Terrain>().terrainData.GetInterpolatedNormal(
+            position.x / terrainObject.GetComponent<Terrain>().terrainData.size.x,
+            position.z / terrainObject.GetComponent<Terrain>().terrainData.size.z
+        );
+        soilPatch.transform.rotation = Quaternion.FromToRotation(Vector3.up, normal);
+
+        StartCoroutine(RemoveSoilPatchAfterDelay(soilPatch, position, 60f));
+    }
+
+    private IEnumerator RemoveSoilPatchAfterDelay(GameObject soilPatch, Vector3 position, float delay)
+    {
+        yield return new WaitForSeconds(delay);
+
+        SoilPatch soilPatchComponent = soilPatch.GetComponent<SoilPatch>();
+        if (soilPatchComponent != null && !soilPatchComponent.isWet)
+        {
+            Destroy(soilPatch);
+            occupiedPositions.Remove(position);
+        }
+    }
+
+    private void OnParticleCollision(GameObject other)
+    {
+        if (other.CompareTag("Water"))
+        {
+            // Check if the collided object has a SoilPatch component
+            SoilPatch soilPatch = other.GetComponentInParent<SoilPatch>();
+            if (soilPatch != null && !soilPatch.isWet)
+            {
+                soilPatch.isWet = true; // Mark the soil as wet to avoid duplicate watering
+
+                // Get the position and rotation of the current dry soil patch
+                Vector3 position = soilPatch.transform.position;
+                Quaternion rotation = soilPatch.transform.rotation;
+
+                // Instantiate the wet soil object at the same position and rotation
+                GameObject wetSoil = Instantiate(wetSoilPrefab, position, rotation);
+
+                // Destroy the original dry soil object
+                Destroy(soilPatch.gameObject);
+            }
+        }
     }
 }

@@ -8,6 +8,7 @@ TagManager:
   - Trail
   - Flame
   - Water
+  - Tomato
   layers:
   - Default
   - TransparentFX
