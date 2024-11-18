@@ -9,6 +9,10 @@ TagManager:
   - Flame
   - Water
   - Tomato
+  - Bread
+  - Sausage
+  - Fried Sausage
+  - Cut Bread
   layers:
   - Default
   - TransparentFX
@@ -19,7 +23,7 @@ TagManager:
   - books
   - Lantern
   - Hats
-  - 
+  - Fried Sausage
   - 
   - 
   - 
