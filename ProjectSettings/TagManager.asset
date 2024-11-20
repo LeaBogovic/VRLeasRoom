@@ -18,6 +18,7 @@ TagManager:
   - CheesePizza
   - Pizza
   - BurnedPizza
+  - CookedCheesePizza
   layers:
   - Default
   - TransparentFX
