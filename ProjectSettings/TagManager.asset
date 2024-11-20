@@ -13,6 +13,11 @@ TagManager:
   - Sausage
   - Fried Sausage
   - Cut Bread
+  - PizzaBread
+  - PizzaSauce
+  - CheesePizza
+  - Pizza
+  - BurnedPizza
   layers:
   - Default
   - TransparentFX
