@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: -8524914009514067707}
   m_Layer: 0
   m_Name: SM_Prop_Food_Pizza_Cooked_01
-  m_TagString: Pizza
+  m_TagString: CookedPizza
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

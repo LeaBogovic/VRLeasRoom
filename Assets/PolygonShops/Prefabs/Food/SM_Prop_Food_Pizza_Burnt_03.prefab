@@ -16,7 +16,7 @@ GameObject:
   - component: {fileID: 8878317306116797348}
   m_Layer: 0
   m_Name: SM_Prop_Food_Pizza_Burnt_03
-  m_TagString: BurnedPizza
+  m_TagString: BurnedCheesePizza
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

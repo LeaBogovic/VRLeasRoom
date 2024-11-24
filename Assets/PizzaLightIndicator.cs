@@ -4,12 +4,12 @@ using UnityEngine;
 
 public class PizzaLightIndicator : MonoBehaviour
 {
-    public Light indicatorLight; // Assign your light in the inspector
-    private bool isPizzaOnCollider = false; // To track if there's a pizza on the collider
+    public Light indicatorLight; // Assign the light in the inspector
+    private bool isPizzaOnCollider = false; // Tracks if there's a valid pizza on the collider
 
     private void Start()
     {
-        // Ensure the light starts white
+        // Start with the light color as white
         if (indicatorLight != null)
         {
             indicatorLight.color = Color.white;
@@ -18,25 +18,24 @@ public class PizzaLightIndicator : MonoBehaviour
 
     private void OnTriggerEnter(Collider other)
     {
-        if (other.CompareTag("CookedCheesePizza"))
+        // Check if the object has a valid pizza tag
+        if (other.CompareTag("CookedCheesePizza") ||
+            other.CompareTag("CookedPepperoniPizza") ||
+            other.CompareTag("CookedMushroomPizza"))
         {
-            // Object is a cooked cheese pizza
             isPizzaOnCollider = true;
-            SetLightColor(Color.green);
-        }
-        else
-        {
-            // Object is not a cooked cheese pizza
-            isPizzaOnCollider = true;
-            SetLightColor(Color.red);
+            SetLightColor(Color.green); // Set light to green for valid pizzas
         }
     }
 
     private void OnTriggerExit(Collider other)
     {
-        // Reset to white when the object leaves the collider
-        isPizzaOnCollider = false;
-        SetLightColor(Color.white);
+        // Reset the light to white when the object leaves
+        if (isPizzaOnCollider)
+        {
+            isPizzaOnCollider = false;
+            SetLightColor(Color.white);
+        }
     }
 
     private void SetLightColor(Color color)
@@ -45,5 +44,11 @@ public class PizzaLightIndicator : MonoBehaviour
         {
             indicatorLight.color = color;
         }
+    }
+
+    public bool IsLightGreen()
+    {
+        // Checks if the light is green
+        return indicatorLight != null && indicatorLight.color == Color.green;
     }
 }

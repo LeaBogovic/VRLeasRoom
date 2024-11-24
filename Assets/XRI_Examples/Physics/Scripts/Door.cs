@@ -1,3 +1,4 @@
+using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.XR.Interaction.Toolkit;
 
@@ -41,6 +42,14 @@ namespace UnityEngine.XR.Content.Interaction
         [Tooltip("Events to fire when the door is unlocked.")]
         UnityEvent m_OnUnlock = new UnityEvent();
 
+        [SerializeField]
+        [Tooltip("The key object that can unlock the door.")]
+        GameObject m_KeyObject; // The key object reference
+
+        [SerializeField]
+        [Tooltip("Set this to true if the door should be locked initially.")]
+        bool m_IsLockedInitially = true; // Should the door be locked initially
+
         JointLimits m_OpenDoorLimits;
         JointLimits m_ClosedDoorLimits;
         bool m_Closed = false;
@@ -73,6 +82,13 @@ namespace UnityEngine.XR.Content.Interaction
             m_DoorJoint.limits = m_ClosedDoorLimits;
             m_KeyKnob.SetActive(false);
             m_Closed = true;
+
+            // Initialize the door lock state
+            m_Locked = m_IsLockedInitially;
+            if (m_Locked)
+            {
+                LockDoor(); // Call the LockDoor method if the door is initially locked
+            }
         }
 
         void Update()
@@ -108,6 +124,10 @@ namespace UnityEngine.XR.Content.Interaction
 
         public void BeginDoorPulling(SelectEnterEventArgs args)
         {
+            // Check if the door is locked; if so, do not allow pulling
+            if (m_Locked)
+                return;
+
             m_DoorPuller.connectedBody = args.interactorObject.GetAttachTransform(args.interactableObject);
             m_DoorPuller.enabled = true;
         }
@@ -122,6 +142,7 @@ namespace UnityEngine.XR.Content.Interaction
         {
             m_LastHandleValue = handleValue;
 
+            // Prevent the door from opening if it is locked
             if (!m_Closed || m_Locked)
                 return;
 
@@ -139,6 +160,9 @@ namespace UnityEngine.XR.Content.Interaction
             m_KeySocket.SetActive(false);
             m_Key.transform.gameObject.SetActive(false);
             m_KeyKnob.SetActive(true);
+
+            // Unlock the door when the key is correctly inserted
+            UnlockDoor();
         }
 
         public void KeyUpdate(float keyValue)
@@ -166,6 +190,26 @@ namespace UnityEngine.XR.Content.Interaction
         {
             m_KnobInteractor = null;
             m_KnobInteractorAttachTransform = null;
+        }
+
+        /// <summary>
+        /// Locks the door by disabling any movement and setting appropriate joint limits.
+        /// </summary>
+        public void LockDoor()
+        {
+            m_Locked = true;
+            m_DoorJoint.limits = m_ClosedDoorLimits;
+            m_OnLock.Invoke();
+        }
+
+        /// <summary>
+        /// Unlocks the door and allows it to be moved.
+        /// </summary>
+        public void UnlockDoor()
+        {
+            m_Locked = false;
+            m_DoorJoint.limits = m_OpenDoorLimits;
+            m_OnUnlock.Invoke();
         }
     }
 }

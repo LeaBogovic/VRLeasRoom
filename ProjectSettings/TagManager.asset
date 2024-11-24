@@ -19,6 +19,16 @@ TagManager:
   - Pizza
   - BurnedPizza
   - CookedCheesePizza
+  - PEPPERONIPIZZA
+  - MUSHROOMANDPEPERONNIPIZZA
+  - BurnedCheesePizza
+  - BurnedPepperoniPizza
+  - BurnedMushroomAndPepperoniPizza
+  - BurnedSaucePizza
+  - CookedPizza
+  - CookedSaucePizza
+  - CookedPepperoniPizza
+  - CookedMushroomPizza
   layers:
   - Default
   - TransparentFX

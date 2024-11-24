@@ -1,13 +1,12 @@
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.SceneManagement; // Include this namespace for scene management
 using UnityEngine.XR.Interaction.Toolkit;
 
 namespace UnityEngine.XR.Content.Interaction
 {
-    /// <summary>
-    /// An interactable that can be pushed by a direct interactor's movement
-    /// </summary>
     public class XRPushButton : XRBaseInteractable
     {
         class PressInfo
@@ -56,6 +55,10 @@ namespace UnityEngine.XR.Content.Interaction
         [Tooltip("Events to trigger when the button pressed value is updated. Only called when the button is pressed")]
         ValueChangeEvent m_OnValueChange;
 
+        [SerializeField]
+        [Tooltip("The name of the scene to load on button press")]
+        string m_SceneToLoad = ""; // New field for scene name
+
         bool m_Pressed = false;
         bool m_Toggled = false;
         float m_Value = 0f;
@@ -63,47 +66,24 @@ namespace UnityEngine.XR.Content.Interaction
 
         Dictionary<IXRHoverInteractor, PressInfo> m_HoveringInteractors = new Dictionary<IXRHoverInteractor, PressInfo>();
 
-        /// <summary>
-        /// The object that is visually pressed down
-        /// </summary>
         public Transform button
         {
             get => m_Button;
             set => m_Button = value;
         }
 
-        /// <summary>
-        /// The distance the button can be pressed
-        /// </summary>
         public float pressDistance
         {
             get => m_PressDistance;
             set => m_PressDistance = value;
         }
 
-        /// <summary>
-        /// The distance (in percentage from 0 to 1) the button is currently being held down
-        /// </summary>
         public float value => m_Value;
 
-        /// <summary>
-        /// Events to trigger when the button is pressed
-        /// </summary>
         public UnityEvent onPress => m_OnPress;
-
-        /// <summary>
-        /// Events to trigger when the button is released
-        /// </summary>
         public UnityEvent onRelease => m_OnRelease;
-
-        /// <summary>
-        /// Events to trigger when the button distance value is changed. Only called when the button is pressed
-        /// </summary>
         public ValueChangeEvent onValueChange => m_OnValueChange;
 
-        /// <summary>
-        /// Whether or not a toggle button is in the locked down position
-        /// </summary>
         public bool toggleValue
         {
             get => m_ToggleButton && m_Toggled;
@@ -192,7 +172,6 @@ namespace UnityEngine.XR.Content.Interaction
             if (m_ToggleButton && m_Toggled)
                 minimumHeight = -m_PressDistance;
 
-            // Go through each interactor
             foreach (var pressInfo in m_HoveringInteractors.Values)
             {
                 var interactorTransform = pressInfo.m_Interactor.GetAttachTransform(this);
@@ -215,7 +194,6 @@ namespace UnityEngine.XR.Content.Interaction
 
             minimumHeight = Mathf.Max(minimumHeight, -(m_PressDistance + m_PressBuffer));
 
-            // If button height goes below certain amount, enter press mode
             var pressed = m_ToggleButton ? (minimumHeight <= -(m_PressDistance + m_PressBuffer)) : (minimumHeight < -m_PressDistance);
 
             var currentDistance = Mathf.Max(0f, -minimumHeight - m_PressBuffer);
@@ -241,7 +219,10 @@ namespace UnityEngine.XR.Content.Interaction
                 if (pressed)
                 {
                     if (!m_Pressed)
+                    {
                         m_OnPress.Invoke();
+                        LoadSceneOnPress(); // Call the scene loading method on press
+                    }
                 }
                 else
                 {
@@ -251,11 +232,25 @@ namespace UnityEngine.XR.Content.Interaction
             }
             m_Pressed = pressed;
 
-            // Call value change event
             if (m_Pressed)
                 m_OnValueChange.Invoke(m_Value);
 
             SetButtonHeight(minimumHeight);
+        }
+
+        /// <summary>
+        /// Loads the specified scene when the button is pressed.
+        /// </summary>
+        public void LoadSceneOnPress()
+        {
+            if (!string.IsNullOrEmpty(m_SceneToLoad))
+            {
+                SceneManager.LoadScene(m_SceneToLoad);
+            }
+            else
+            {
+                Debug.LogWarning("Scene name is not set! Please specify a scene name in the Inspector.");
+            }
         }
 
         void SetButtonHeight(float height)
