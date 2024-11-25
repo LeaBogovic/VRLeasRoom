@@ -19,14 +19,14 @@ public class SetTurnTypeFromPlayerPref : MonoBehaviour
         if(PlayerPrefs.HasKey("turn"))
         {
             int value = PlayerPrefs.GetInt("turn");
-            if(value == 0)
+            if(value == 1)
             {
                 snapTurn.leftHandSnapTurnAction.action.Enable();
                 snapTurn.rightHandSnapTurnAction.action.Enable();
                 continuousTurn.leftHandTurnAction.action.Disable();
                 continuousTurn.rightHandTurnAction.action.Disable();
             }
-            else if(value == 1)
+            else if(value == 0)
             {
                 snapTurn.leftHandSnapTurnAction.action.Disable();
                 snapTurn.rightHandSnapTurnAction.action.Disable();
